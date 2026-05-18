@@ -26,7 +26,7 @@ pub fn Env::lookup(self : Env, name : String) -> Value raise EvalError {
 
 ///|
 /// Define (or shadow) a variable in the current frame.
-pub fn Env::define(self : Env, name : String, value : Value) -> Unit {
+pub fn Env::bind(self : Env, name : String, value : Value) -> Unit {
   self.bindings[name] = value
 }
 
@@ -183,13 +183,13 @@ pub fn eval(expr : Value, env : Env) -> Value raise EvalError {
     // (define <name> <value>)
     Pair(Sym("define"), Pair(Sym(name), Pair(val_expr, Nil))) => {
       let val = eval(val_expr, env)
-      env.define(name, val)
+      env.bind(name, val)
       Nil
     }
     // (define (<name> <params>...) <body>)  — function shorthand
     Pair(Sym("define"), Pair(Pair(Sym(name), params), Pair(body_expr, Nil))) => {
       let lambda_val = Closure(params, body_expr, env)
-      env.define(name, lambda_val)
+      env.bind(name, lambda_val)
       Nil
     }
 

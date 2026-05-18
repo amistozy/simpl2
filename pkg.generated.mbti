@@ -39,7 +39,7 @@ pub(all) struct Env {
   bindings : Map[String, Value]
   parent : Env?
 }
-pub fn Env::define(Self, String, Value) -> Unit
+pub fn Env::bind(Self, String, Value) -> Unit
 pub fn Env::extend(Self, Value, Array[Value]) -> Self raise EvalError
 pub fn Env::lookup(Self, String) -> Value raise EvalError
 pub fn Env::new() -> Self

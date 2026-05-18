@@ -158,6 +158,7 @@ fn builtin_cdr(args : Array[Value]) -> Value raise EvalError {
 }
 
 ///|
+#warnings("-unused_error_type")
 fn builtin_list(args : Array[Value]) -> Value raise EvalError {
   list_from_array(args)
 }
@@ -249,6 +250,7 @@ fn builtin_not(args : Array[Value]) -> Value raise EvalError {
 }
 
 ///|
+#warnings("-unused_error_type")
 fn builtin_and(args : Array[Value]) -> Value raise EvalError {
   for i = 0; i < args.length(); i = i + 1 {
     if !is_truthy(args[i]) {
@@ -263,6 +265,7 @@ fn builtin_and(args : Array[Value]) -> Value raise EvalError {
 }
 
 ///|
+#warnings("-unused_error_type")
 fn builtin_or(args : Array[Value]) -> Value raise EvalError {
   for i = 0; i < args.length(); i = i + 1 {
     if is_truthy(args[i]) {
@@ -275,32 +278,32 @@ fn builtin_or(args : Array[Value]) -> Value raise EvalError {
 ///|
 /// Register all built-in procedures into an environment.
 pub fn register_builtins(env : Env) -> Unit {
-  env.define("+", BuiltinProc("+", builtin_add))
-  env.define("-", BuiltinProc("-", builtin_sub))
-  env.define("*", BuiltinProc("*", builtin_mul))
-  env.define("/", BuiltinProc("/", builtin_div))
-  env.define("=", BuiltinProc("=", builtin_eq))
-  env.define("<", BuiltinProc("<", builtin_lt))
-  env.define(">", BuiltinProc(">", builtin_gt))
-  env.define("<=", BuiltinProc("<=", builtin_le))
-  env.define(">=", BuiltinProc(">=", builtin_ge))
-  env.define("cons", BuiltinProc("cons", builtin_cons))
-  env.define("car", BuiltinProc("car", builtin_car))
-  env.define("cdr", BuiltinProc("cdr", builtin_cdr))
-  env.define("list", BuiltinProc("list", builtin_list))
-  env.define("null?", BuiltinProc("null?", builtin_is_null))
-  env.define("number?", BuiltinProc("number?", builtin_is_number))
-  env.define("symbol?", BuiltinProc("symbol?", builtin_is_symbol))
-  env.define("string?", BuiltinProc("string?", builtin_is_string))
-  env.define("pair?", BuiltinProc("pair?", builtin_is_pair))
-  env.define("bool?", BuiltinProc("bool?", builtin_is_bool))
-  env.define("display", BuiltinProc("display", builtin_display))
-  env.define("newline", BuiltinProc("newline", builtin_newline))
-  env.define("not", BuiltinProc("not", builtin_not))
-  env.define("and", BuiltinProc("and", builtin_and))
-  env.define("or", BuiltinProc("or", builtin_or))
+  env.bind("+", BuiltinProc("+", builtin_add))
+  env.bind("-", BuiltinProc("-", builtin_sub))
+  env.bind("*", BuiltinProc("*", builtin_mul))
+  env.bind("/", BuiltinProc("/", builtin_div))
+  env.bind("=", BuiltinProc("=", builtin_eq))
+  env.bind("<", BuiltinProc("<", builtin_lt))
+  env.bind(">", BuiltinProc(">", builtin_gt))
+  env.bind("<=", BuiltinProc("<=", builtin_le))
+  env.bind(">=", BuiltinProc(">=", builtin_ge))
+  env.bind("cons", BuiltinProc("cons", builtin_cons))
+  env.bind("car", BuiltinProc("car", builtin_car))
+  env.bind("cdr", BuiltinProc("cdr", builtin_cdr))
+  env.bind("list", BuiltinProc("list", builtin_list))
+  env.bind("null?", BuiltinProc("null?", builtin_is_null))
+  env.bind("number?", BuiltinProc("number?", builtin_is_number))
+  env.bind("symbol?", BuiltinProc("symbol?", builtin_is_symbol))
+  env.bind("string?", BuiltinProc("string?", builtin_is_string))
+  env.bind("pair?", BuiltinProc("pair?", builtin_is_pair))
+  env.bind("bool?", BuiltinProc("bool?", builtin_is_bool))
+  env.bind("display", BuiltinProc("display", builtin_display))
+  env.bind("newline", BuiltinProc("newline", builtin_newline))
+  env.bind("not", BuiltinProc("not", builtin_not))
+  env.bind("and", BuiltinProc("and", builtin_and))
+  env.bind("or", BuiltinProc("or", builtin_or))
   // Predefined constants
-  env.define("#t", Bool(true))
-  env.define("#f", Bool(false))
-  env.define("nil", Nil)
+  env.bind("#t", Bool(true))
+  env.bind("#f", Bool(false))
+  env.bind("nil", Nil)
 }
