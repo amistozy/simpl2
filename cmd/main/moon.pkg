@@ -1,5 +1,5 @@
 import {
-  "amistozy/simpl" @simpl,
+  "amistozy/simpl",
   "moonbitlang/async",
   "moonbitlang/async/stdio",
   "moonbitlang/core/debug",
