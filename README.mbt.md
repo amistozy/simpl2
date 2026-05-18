@@ -14,48 +14,42 @@ moon test --target native
 
 ## REPL 示例
 
-```mbt check
-///|
-/// Arithmetic
-/// ```
-/// (+ 1 2 3)       => 6
-/// (- 10 3 2)      => 5
-/// (* 2 3 4)       => 24
-/// (/ 100 2 5)     => 10
-/// ```
-
-///|
-/// Variables and functions
-/// ```
-/// (define x 10)
-/// (define (square n) (* n n))
-/// (square x)       => 100
-/// ```
-
-///|
-/// Closures (lexical scoping)
-/// ```
-/// (define (make-adder n) (lambda (x) (+ x n)))
-/// (define add5 (make-adder 5))
-/// (add5 10)        => 15
-/// ```
-
-///|
-/// Conditionals
-/// ```
-/// (define (abs n) (if (< n 0) (- n) n))
-/// (abs -42)        => 42
-/// ```
-
-///|
-/// Lists
-/// ```
-/// (car '(1 2 3))   => 1
-/// (cdr '(1 2 3))   => (2 3)
-/// (cons 1 '(2 3))  => (1 2 3)
-/// (list 1 2 3)     => (1 2 3)
-/// ```
+Arithmetic
 ```
+(+ 1 2 3)       => 6
+(- 10 3 2)      => 5
+(* 2 3 4)       => 24
+(/ 100 2 5)     => 10
+```
+
+Variables and functions
+```
+(define x 10)
+(define (square n) (* n n))
+(square x)       => 100
+```
+
+Closures (lexical scoping)
+```
+(define (make-adder n) (lambda (x) (+ x n)))
+(define add5 (make-adder 5))
+(add5 10)        => 15
+```
+
+Conditionals
+```
+(define (abs n) (if (< n 0) (- n) n))
+(abs -42)        => 42
+```
+
+Lists
+```
+(car '(1 2 3))   => 1
+(cdr '(1 2 3))   => (2 3)
+(cons 1 '(2 3))  => (1 2 3)
+(list 1 2 3)     => (1 2 3)
+```
+
 
 ## 语言特性
 
