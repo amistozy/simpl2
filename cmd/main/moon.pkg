@@ -1,6 +1,11 @@
-// import {
-//   "amistozy/simpl" @lib,
-// }
+import {
+  "amistozy/simpl" @simpl,
+  "moonbitlang/async",
+  "moonbitlang/async/stdio",
+  "moonbitlang/core/debug",
+}
+
+supported_targets = "+native"
 
 options(
   "is-main": true,

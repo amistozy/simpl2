@@ -1,0 +1,64 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "amistozy/simpl"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn eval(Value, Env) -> Value raise EvalError
+
+pub fn global_env() -> Env
+
+pub fn is_truthy(Value) -> Bool
+
+pub fn list_from_array(Array[Value]) -> Value
+
+pub fn parse(String) -> Value raise ParseError
+
+pub fn parse_many(String) -> Array[Value] raise ParseError
+
+pub fn register_builtins(Env) -> Unit
+
+// Errors
+pub(all) suberror EvalError {
+  UnboundVariable(String)
+  NotCallable(String)
+  ArityMismatch(String, Int, Int)
+  TypeMismatch(String, String)
+} derive(Eq, @debug.Debug)
+
+pub(all) suberror ParseError {
+  UnexpectedEof(pos~ : Int)
+  UnexpectedChar(char~ : Char, pos~ : Int)
+  InvalidEscape(char~ : Char, pos~ : Int)
+} derive(Eq, @debug.Debug)
+
+// Types and methods
+pub(all) struct Env {
+  bindings : Map[String, Value]
+  parent : Env?
+}
+pub fn Env::define(Self, String, Value) -> Unit
+pub fn Env::extend(Self, Value, Array[Value]) -> Self raise EvalError
+pub fn Env::lookup(Self, String) -> Value raise EvalError
+pub fn Env::new() -> Self
+pub fn Env::set(Self, String, Value) -> Unit raise EvalError
+
+pub(all) enum Value {
+  Num(Double)
+  Sym(String)
+  Str(String)
+  Bool(Bool)
+  Nil
+  Pair(Value, Value)
+  Closure(Value, Value, Env)
+  BuiltinProc(String, (Array[Value]) -> Value raise EvalError)
+}
+pub fn Value::display(Self) -> String
+pub impl Show for Value
+
+// Type aliases
+
+// Traits
+
