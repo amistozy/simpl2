@@ -9,8 +9,14 @@
 async fn main {
   let env = @simpl.global_env()
   println("SimpL — A minimal Lisp for teaching")
-  println("Type :q or press Ctrl+D to exit, :h for help")
+  println("Type :q or Ctrl+D to exit, :clear to clear, :h for help")
   repl(env)
+}
+
+///|
+/// Clear the terminal screen using ANSI escape codes.
+async fn clear_screen() -> Unit {
+  @stdio.stdout.write("\u{001b}[2J\u{001b}[H")
 }
 
 ///|
@@ -30,6 +36,9 @@ async fn repl(env : @simpl.Env) -> Unit {
         repl(env)
       } else if trimmed == ":h" || trimmed == ":help" {
         print_help()
+        repl(env)
+      } else if trimmed == ":clear" || trimmed == ":cls" {
+        clear_screen()
         repl(env)
       } else {
         handle_input(trimmed, env)
@@ -113,9 +122,10 @@ fn print_help() -> Unit {
     #|  (sq 5)                 => 25
     #|
     #|REPL commands:
-    #|  :h, :help   — show this help
-    #|  :q, :quit   — exit the REPL
-    #|  ; comment   — line comments are supported
+    #|  :h, :help    — show this help
+    #|  :q, :quit    — exit the REPL
+    #|  :clear, :cls — clear the screen
+    #|  ; comment    — line comments are supported
     #|,
   println(help_text)
 }
