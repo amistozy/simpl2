@@ -230,14 +230,14 @@ fn builtin_display(args : Array[Value]) -> Value raise EvalError {
     Str(s) => println(s)
     _ => println(args[0].display())
   }
-  Nil
+  Void
 }
 
 ///|
 fn builtin_newline(args : Array[Value]) -> Value raise EvalError {
   check_arity("newline", 0, args.length())
   println("")
-  Nil
+  Void
 }
 
 ///|

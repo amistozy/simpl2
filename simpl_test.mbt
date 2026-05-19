@@ -89,7 +89,7 @@ test "eval if" {
   inspect(@simpl.eval(@simpl.parse("(if #t 1 2)"), env), content="1")
   inspect(@simpl.eval(@simpl.parse("(if #f 1 2)"), env), content="2")
   inspect(@simpl.eval(@simpl.parse("(if #t 42)"), env), content="42")
-  inspect(@simpl.eval(@simpl.parse("(if #f 42)"), env), content="()")
+  inspect(@simpl.eval(@simpl.parse("(if #f 42)"), env), content="")
 }
 
 ///|

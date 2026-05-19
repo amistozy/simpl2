@@ -41,7 +41,9 @@ pub(all) enum Value {
   Str(String)
   /// Boolean literal (#t or #f).
   Bool(Bool)
-  /// The empty list, also used as "nil".
+  /// No value (returned by define, set!, display, newline).
+  Void
+  /// The empty list.
   Nil
   /// A cons cell: car and cdr.
   Pair(Value, Value)
@@ -83,6 +85,7 @@ pub fn Value::display(self : Value) -> String {
     Str(s) => "\"\{s}\""
     Bool(true) => "#t"
     Bool(false) => "#f"
+    Void => ""
     Nil => "()"
     Pair(_, _) => "(\{self.pair_string()})"
     Closure(_, _, _) => "#<closure>"

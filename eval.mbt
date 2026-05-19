@@ -152,7 +152,7 @@ fn apply(fn_val : Value, args : Array[Value]) -> Value raise EvalError {
 pub fn eval(expr : Value, env : Env) -> Value raise EvalError {
   match expr {
     // Self-evaluating forms
-    Num(_) | Str(_) | Bool(_) | Nil => expr
+    Num(_) | Str(_) | Bool(_) | Nil | Void => expr
     Closure(_, _, _) | BuiltinProc(_, _) => expr
 
     // Symbol lookup
@@ -168,12 +168,12 @@ pub fn eval(expr : Value, env : Env) -> Value raise EvalError {
       } else {
         eval(else_expr, env)
       }
-    // (if <cond> <then>)  — no else clause, returns Nil
+    // (if <cond> <then>)  — no else clause, returns Void
     Pair(Sym("if"), Pair(cond, Pair(then_expr, Nil))) =>
       if is_truthy(eval(cond, env)) {
         eval(then_expr, env)
       } else {
-        Nil
+        Void
       }
 
     // (lambda (<params>) <body>)
@@ -184,13 +184,13 @@ pub fn eval(expr : Value, env : Env) -> Value raise EvalError {
     Pair(Sym("define"), Pair(Sym(name), Pair(val_expr, Nil))) => {
       let val = eval(val_expr, env)
       env.bind(name, val)
-      Nil
+      Void
     }
     // (define (<name> <params>...) <body>)  — function shorthand
     Pair(Sym("define"), Pair(Pair(Sym(name), params), Pair(body_expr, Nil))) => {
       let lambda_val = Closure(params, body_expr, env)
       env.bind(name, lambda_val)
-      Nil
+      Void
     }
 
     // (begin <expr>...)
@@ -200,7 +200,7 @@ pub fn eval(expr : Value, env : Env) -> Value raise EvalError {
     Pair(Sym("set!"), Pair(Sym(name), Pair(val_expr, Nil))) => {
       let val = eval(val_expr, env)
       env.set(name, val)
-      Nil
+      Void
     }
 
     // Function application: (fn arg1 arg2 ...)

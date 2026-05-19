@@ -72,7 +72,13 @@ async fn eval_all(
         repl(env)
       }
     } noraise {
-      _ => eval_all(exprs, idx + 1, filename, env)
+      val => {
+        match val {
+          @simpl.Value::Void => ()
+          _ => println(@simpl.Value::display(val))
+        }
+        eval_all(exprs, idx + 1, filename, env)
+      }
     }
   }
 }
@@ -143,7 +149,10 @@ async fn handle_input(input : String, env : @simpl.Env) -> Unit {
         }
       } noraise {
         val => {
-          println(@simpl.Value::display(val))
+          match val {
+            @simpl.Value::Void => ()
+            _ => println(@simpl.Value::display(val))
+          }
           repl(env)
         }
       }
@@ -176,9 +185,9 @@ fn print_help() -> Unit {
     #|
     #|Examples:
     #|  (+ 1 2)                => 3
-    #|  (define x 10)          => ()
+    #|  (define x 10)          => ()   ; (no output in REPL)
     #|  (if (> x 5) 'big 'small) => big
-    #|  (define (sq x) (* x x)) => ()
+    #|  (define (sq x) (* x x)) => ()   ; (no output in REPL)
     #|  (sq 5)                 => 25
     #|
     #|REPL commands:
