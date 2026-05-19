@@ -28,27 +28,23 @@ async fn load_file(filename : String, env : @simpl.Env) -> Unit {
       repl(env)
     }
   } noraise {
-    data => {
+    data =>
       try data.text() catch {
         err => {
           println("Error decoding file '\{filename}': \{@debug.to_string(err)}")
           repl(env)
         }
       } noraise {
-        source => {
+        source =>
           try @simpl.parse_many(source) catch {
             err => {
               println("Parse error in '\{filename}': \{@debug.to_string(err)}")
               repl(env)
             }
           } noraise {
-            exprs => {
-              eval_all(exprs, 0, filename, env)
-            }
+            exprs => eval_all(exprs, 0, filename, env)
           }
-        }
       }
-    }
   }
 }
 
@@ -68,7 +64,9 @@ async fn eval_all(
     try @simpl.eval(exprs[idx], env) catch {
       err => {
         let pos = idx + 1
-        println("Eval error in '\{filename}' at expr \{pos}: \{@debug.to_string(err)}")
+        println(
+          "Eval error in '\{filename}' at expr \{pos}: \{@debug.to_string(err)}",
+        )
         repl(env)
       }
     } noraise {
@@ -140,7 +138,9 @@ async fn handle_input(input : String, env : @simpl.Env) -> Unit {
           repl(env)
         }
         @simpl.EvalError::ArityMismatch(name, expect, got) => {
-          println("Error: arity mismatch — \{name} expects \{expect} arguments, got \{got}")
+          println(
+            "Error: arity mismatch — \{name} expects \{expect} arguments, got \{got}",
+          )
           repl(env)
         }
         @simpl.EvalError::TypeMismatch(op, detail) => {

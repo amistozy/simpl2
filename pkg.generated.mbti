@@ -50,6 +50,7 @@ pub(all) enum Value {
   Sym(String)
   Str(String)
   Bool(Bool)
+  Void
   Nil
   Pair(Value, Value)
   Closure(Value, Value, Env)
