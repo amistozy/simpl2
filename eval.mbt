@@ -79,7 +79,7 @@ pub fn Env::extend(
       Sym(name) => {
         // Variadic: bind remaining args as a list
         let rest_args : Array[Value] = []
-        for j = idx; j < args.length(); j = j + 1 {
+        for j in idx..<args.length() {
           rest_args.push(args[j])
         }
         bindings[name] = list_from_array(rest_args)

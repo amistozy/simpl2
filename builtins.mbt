@@ -32,47 +32,35 @@ fn expect_num(name : String, v : Value) -> Double raise EvalError {
 
 ///|
 fn builtin_add(args : Array[Value]) -> Value raise EvalError {
-  let mut sum : Double = 0.0
-  for i = 0; i < args.length(); i = i + 1 {
-    sum = sum + expect_num("+", args[i])
-  }
-  Num(sum)
+  Num(args.fold(init=0.0, (sum, v) => sum + expect_num("+", v)))
 }
 
 ///|
 fn builtin_sub(args : Array[Value]) -> Value raise EvalError {
-  check_min_arity("-", 1, args.length())
-  if args.length() == 1 {
-    Num(-expect_num("-", args[0]))
-  } else {
-    let mut result = expect_num("-", args[0])
-    for i = 1; i < args.length(); i = i + 1 {
-      result = result - expect_num("-", args[i])
-    }
-    Num(result)
+  match args {
+    [x] => Num(-expect_num("-", x))
+    [x, .. rest] =>
+      Num(
+        rest.fold(init=expect_num("-", x), (acc, v) => acc - expect_num("-", v)),
+      )
+    _ => raise EvalError::ArityMismatch("-", 1, args.length())
   }
 }
 
 ///|
 fn builtin_mul(args : Array[Value]) -> Value raise EvalError {
-  let mut product : Double = 1.0
-  for i = 0; i < args.length(); i = i + 1 {
-    product = product * expect_num("*", args[i])
-  }
-  Num(product)
+  Num(args.fold(init=1.0, (product, v) => product * expect_num("*", v)))
 }
 
 ///|
 fn builtin_div(args : Array[Value]) -> Value raise EvalError {
-  check_min_arity("/", 1, args.length())
-  if args.length() == 1 {
-    Num(1.0 / expect_num("/", args[0]))
-  } else {
-    let mut result = expect_num("/", args[0])
-    for i = 1; i < args.length(); i = i + 1 {
-      result = result / expect_num("/", args[i])
-    }
-    Num(result)
+  match args {
+    [x] => Num(1.0 / expect_num("/", x))
+    [x, .. rest] =>
+      Num(
+        rest.fold(init=expect_num("/", x), (acc, v) => acc / expect_num("/", v)),
+      )
+    _ => raise EvalError::ArityMismatch("/", 1, args.length())
   }
 }
 
@@ -82,7 +70,7 @@ fn builtin_div(args : Array[Value]) -> Value raise EvalError {
 ///|
 fn builtin_eq(args : Array[Value]) -> Value raise EvalError {
   check_min_arity("=", 2, args.length())
-  for i = 0; i < args.length() - 1; i = i + 1 {
+  for i in 0..<(args.length() - 1) {
     if !num_eq(args[i], args[i + 1]) {
       return Bool(false)
     }
@@ -252,8 +240,8 @@ fn builtin_not(args : Array[Value]) -> Value raise EvalError {
 ///|
 #warnings("-unused_error_type")
 fn builtin_and(args : Array[Value]) -> Value raise EvalError {
-  for i = 0; i < args.length(); i = i + 1 {
-    if !is_truthy(args[i]) {
+  for v in args {
+    if !is_truthy(v) {
       return Bool(false)
     }
   }
@@ -267,9 +255,9 @@ fn builtin_and(args : Array[Value]) -> Value raise EvalError {
 ///|
 #warnings("-unused_error_type")
 fn builtin_or(args : Array[Value]) -> Value raise EvalError {
-  for i = 0; i < args.length(); i = i + 1 {
-    if is_truthy(args[i]) {
-      return args[i]
+  for v in args {
+    if is_truthy(v) {
+      return v
     }
   }
   Bool(false)
