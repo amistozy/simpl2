@@ -80,13 +80,13 @@ pub fn Value::display(self : Value) -> String {
   match self {
     Num(n) => number_to_string(n)
     Sym(s) => s
-    Str(s) => "\"" + s + "\""
+    Str(s) => "\"\{s}\""
     Bool(true) => "#t"
     Bool(false) => "#f"
     Nil => "()"
-    Pair(_, _) => "(" + self.pair_string() + ")"
+    Pair(_, _) => "(\{self.pair_string()})"
     Closure(_, _, _) => "#<closure>"
-    BuiltinProc(name, _) => "#<builtin:" + name + ">"
+    BuiltinProc(name, _) => "#<builtin:\{name}>"
   }
 }
 
@@ -114,8 +114,8 @@ fn Value::pair_string(self : Value) -> String {
     Pair(car, cdr) =>
       match cdr {
         Nil => car.to_string()
-        Pair(_, _) => car.to_string() + " " + cdr.pair_string()
-        _ => car.to_string() + " . " + cdr.to_string()
+        Pair(_, _) => "\{car.to_string()} \{cdr.pair_string()}"
+        _ => "\{car.to_string()} . \{cdr.to_string()}"
       }
     _ => ""
   }

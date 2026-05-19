@@ -24,21 +24,21 @@ async fn clear_screen() -> Unit {
 async fn load_file(filename : String, env : @simpl.Env) -> Unit {
   try @fs.read_file(filename) catch {
     err => {
-      println("Error reading file '" + filename + "': " + @debug.to_string(err))
+      println("Error reading file '\{filename}': \{@debug.to_string(err)}")
       repl(env)
     }
   } noraise {
     data => {
       try data.text() catch {
         err => {
-          println("Error decoding file '" + filename + "': " + @debug.to_string(err))
+          println("Error decoding file '\{filename}': \{@debug.to_string(err)}")
           repl(env)
         }
       } noraise {
         source => {
           try @simpl.parse_many(source) catch {
             err => {
-              println("Parse error in '" + filename + "': " + @debug.to_string(err))
+              println("Parse error in '\{filename}': \{@debug.to_string(err)}")
               repl(env)
             }
           } noraise {
@@ -61,19 +61,14 @@ async fn eval_all(
   env : @simpl.Env,
 ) -> Unit {
   if idx >= exprs.length() {
-    println("Loaded '" + filename + "' (" + exprs.length().to_string() + " expressions)")
+    let n = exprs.length()
+    println("Loaded '\{filename}' (\{n} expressions)")
     repl(env)
   } else {
     try @simpl.eval(exprs[idx], env) catch {
       err => {
-        println(
-          "Eval error in '" +
-          filename +
-          "' at expr " +
-          (idx + 1).to_string() +
-          ": " +
-          @debug.to_string(err),
-        )
+        let pos = idx + 1
+        println("Eval error in '\{filename}' at expr \{pos}: \{@debug.to_string(err)}")
         repl(env)
       }
     } noraise {
@@ -124,33 +119,26 @@ async fn repl(env : @simpl.Env) -> Unit {
 async fn handle_input(input : String, env : @simpl.Env) -> Unit {
   try @simpl.parse(input) catch {
     err => {
-      println("Parse error: " + @debug.to_string(err))
+      println("Parse error: \{@debug.to_string(err)}")
       repl(env)
     }
   } noraise {
     expr =>
       try @simpl.eval(expr, env) catch {
         @simpl.EvalError::UnboundVariable(name) => {
-          println("Error: unbound variable '" + name + "'")
+          println("Error: unbound variable '\{name}'")
           repl(env)
         }
         @simpl.EvalError::NotCallable(detail) => {
-          println("Error: not callable — " + detail)
+          println("Error: not callable — \{detail}")
           repl(env)
         }
         @simpl.EvalError::ArityMismatch(name, expect, got) => {
-          println(
-            "Error: arity mismatch — " +
-            name +
-            " expects " +
-            expect.to_string() +
-            " arguments, got " +
-            got.to_string(),
-          )
+          println("Error: arity mismatch — \{name} expects \{expect} arguments, got \{got}")
           repl(env)
         }
         @simpl.EvalError::TypeMismatch(op, detail) => {
-          println("Error: type mismatch in " + op + " — " + detail)
+          println("Error: type mismatch in \{op} — \{detail}")
           repl(env)
         }
       } noraise {
