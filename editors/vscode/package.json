@@ -1,0 +1,39 @@
+{
+  "name": "simpl",
+  "displayName": "SimpL",
+  "description": "Syntax highlighting for SimpL — A minimal Lisp for teaching",
+  "version": "0.1.0",
+  "publisher": "amistozy",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "simpl",
+        "aliases": [
+          "SimpL",
+          "simpl"
+        ],
+        "extensions": [
+          ".spl"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "simpl",
+        "scopeName": "source.simpl",
+        "path": "./syntaxes/simpl.tmLanguage.json"
+      }
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/amistozy/simpl"
+  }
+}

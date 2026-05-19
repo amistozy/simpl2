@@ -1,0 +1,72 @@
+{
+  "name": "SimpL",
+  "scopeName": "source.simpl",
+  "patterns": [
+    {
+      "include": "#comment"
+    },
+    {
+      "include": "#string"
+    },
+    {
+      "include": "#boolean"
+    },
+    {
+      "include": "#number"
+    },
+    {
+      "include": "#keyword"
+    },
+    {
+      "include": "#builtin"
+    },
+    {
+      "include": "#constant"
+    },
+    {
+      "include": "#symbol"
+    }
+  ],
+  "repository": {
+    "comment": {
+      "name": "comment.line.semicolon.simpl",
+      "begin": ";",
+      "end": "$"
+    },
+    "string": {
+      "name": "string.quoted.double.simpl",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        {
+          "name": "constant.character.escape.simpl",
+          "match": "\\\\."
+        }
+      ]
+    },
+    "boolean": {
+      "name": "constant.language.boolean.simpl",
+      "match": "#[tf]\\b"
+    },
+    "number": {
+      "name": "constant.numeric.simpl",
+      "match": "-?[0-9]+\\.?[0-9]*\\b"
+    },
+    "keyword": {
+      "name": "keyword.control.simpl",
+      "match": "\\b(define|lambda|if|quote|begin|set!)\\b"
+    },
+    "builtin": {
+      "name": "support.function.simpl",
+      "match": "\\b(cons|car|cdr|list|display|newline|not|and|or|null\\?|number\\?|symbol\\?|string\\?|pair\\?|bool\\?|[+\\-*/=<>]=?)\\b"
+    },
+    "constant": {
+      "name": "constant.language.simpl",
+      "match": "\\bnil\\b"
+    },
+    "symbol": {
+      "name": "variable.other.simpl",
+      "match": "[^\\s()\"';]+"
+    }
+  }
+}
