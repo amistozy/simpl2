@@ -30,7 +30,13 @@
         "scopeName": "source.simpl",
         "path": "./syntaxes/simpl.tmLanguage.json"
       }
-    ]
+    ],
+    "configurationDefaults": {
+      "[simpl]": {
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true
+      }
+    }
   },
   "repository": {
     "type": "git",
