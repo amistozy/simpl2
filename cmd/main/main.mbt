@@ -20,6 +20,69 @@ async fn clear_screen() -> Unit {
 }
 
 ///|
+/// Load and evaluate a SimpL source file into the current environment.
+async fn load_file(filename : String, env : @simpl.Env) -> Unit {
+  try @fs.read_file(filename) catch {
+    err => {
+      println("Error reading file '" + filename + "': " + @debug.to_string(err))
+      repl(env)
+    }
+  } noraise {
+    data => {
+      try data.text() catch {
+        err => {
+          println("Error decoding file '" + filename + "': " + @debug.to_string(err))
+          repl(env)
+        }
+      } noraise {
+        source => {
+          try @simpl.parse_many(source) catch {
+            err => {
+              println("Parse error in '" + filename + "': " + @debug.to_string(err))
+              repl(env)
+            }
+          } noraise {
+            exprs => {
+              eval_all(exprs, 0, filename, env)
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+///|
+/// Evaluate a list of expressions sequentially, reporting errors.
+async fn eval_all(
+  exprs : Array[@simpl.Value],
+  idx : Int,
+  filename : String,
+  env : @simpl.Env,
+) -> Unit {
+  if idx >= exprs.length() {
+    println("Loaded '" + filename + "' (" + exprs.length().to_string() + " expressions)")
+    repl(env)
+  } else {
+    try @simpl.eval(exprs[idx], env) catch {
+      err => {
+        println(
+          "Eval error in '" +
+          filename +
+          "' at expr " +
+          (idx + 1).to_string() +
+          ": " +
+          @debug.to_string(err),
+        )
+        repl(env)
+      }
+    } noraise {
+      _ => eval_all(exprs, idx + 1, filename, env)
+    }
+  }
+}
+
+///|
 /// The REPL loop: read, evaluate, print, repeat.
 async fn repl(env : @simpl.Env) -> Unit {
   @stdio.stdout.write("simpl> ")
@@ -39,6 +102,15 @@ async fn repl(env : @simpl.Env) -> Unit {
         repl(env)
       } else if trimmed == ":clear" || trimmed == ":cls" {
         clear_screen()
+        repl(env)
+      } else if trimmed.has_prefix(":load ") {
+        let filename = trimmed[6:].trim().to_owned()
+        load_file(filename, env)
+      } else if trimmed.has_prefix(":l ") {
+        let filename = trimmed[3:].trim().to_owned()
+        load_file(filename, env)
+      } else if trimmed == ":l" || trimmed == ":load" {
+        println("Usage: :load <filename>  or  :l <filename>")
         repl(env)
       } else {
         handle_input(trimmed, env)
@@ -122,10 +194,11 @@ fn print_help() -> Unit {
     #|  (sq 5)                 => 25
     #|
     #|REPL commands:
-    #|  :h, :help    — show this help
-    #|  :q, :quit    — exit the REPL
-    #|  :clear, :cls — clear the screen
-    #|  ; comment    — line comments are supported
+    #|  :h, :help          — show this help
+    #|  :q, :quit          — exit the REPL
+    #|  :clear, :cls       — clear the screen
+    #|  :l <file>, :load <file> — load and evaluate a SimpL file
+    #|  ; comment          — line comments are supported
     #|,
   println(help_text)
 }

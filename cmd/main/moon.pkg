@@ -1,6 +1,8 @@
 import {
   "amistozy/simpl",
   "moonbitlang/async",
+  "moonbitlang/async/fs",
+  "moonbitlang/async/io",
   "moonbitlang/async/stdio",
   "moonbitlang/core/debug",
 }
