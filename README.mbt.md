@@ -15,7 +15,7 @@ SimpL（极简 Lisp）是一个面向教学的解释型 Lisp 方言，用约 100
 
 ```bash
 moon run cmd/main    # 进入 REPL
-moon test --target native   # 运行 23 个测试
+moon test --target native   # 运行 25 个测试
 ```
 
 ## REPL 命令
@@ -55,10 +55,10 @@ moon test --target native   # 运行 23 个测试
 (cond ((<test> <expr> ...) ...)
       (else <expr> ...))  ; 多分支条件，else 始终匹配
 
-(lambda (<params>) <body>)
+(lambda (<params>) <body> ...)
 
 (define <name> <value>)
-(define (<name> <params>) <body>)  ; 函数简写
+(define (<name> <params>) <body> ...)  ; 函数简写
 
 (let ((<var> <val>) ...) <body> ...)  ; 局部绑定，val 在外部环境求值
 
@@ -141,7 +141,7 @@ simpl/
 ├── reader.mbt         # S-表达式解析器
 ├── builtins.mbt       # 24 个内置函数
 ├── eval.mbt           # 求值器与环境操作
-├── simpl_test.mbt     # 23 个黑盒测试
+├── simpl_test.mbt     # 25 个黑盒测试
 ├── editors/vscode/    # VS Code 语法高亮扩展
 └── cmd/main/
     └── main.mbt       # 异步 REPL

@@ -253,9 +253,9 @@ pub fn eval(expr : Value, env : Env) -> Value raise EvalError {
     // (cond (test expr ...) ...)  — multi-branch conditional
     Pair(Sym("cond"), clauses) => eval_cond(clauses, env)
 
-    // (lambda (<params>) <body>)
-    Pair(Sym("lambda"), Pair(params, Pair(body, Nil))) =>
-      Closure(params, body, env)
+    // (lambda (<params>) <body> ...)
+    Pair(Sym("lambda"), Pair(params, body)) =>
+      Closure(params, Pair(Sym("begin"), body), env)
 
     // (define <name> <value>)
     Pair(Sym("define"), Pair(Sym(name), Pair(val_expr, Nil))) => {
@@ -263,9 +263,9 @@ pub fn eval(expr : Value, env : Env) -> Value raise EvalError {
       env.bind(name, val)
       Void
     }
-    // (define (<name> <params>...) <body>)  — function shorthand
-    Pair(Sym("define"), Pair(Pair(Sym(name), params), Pair(body_expr, Nil))) => {
-      let lambda_val = Closure(params, body_expr, env)
+    // (define (<name> <params>...) <body> ...)  — function shorthand
+    Pair(Sym("define"), Pair(Pair(Sym(name), params), body)) => {
+      let lambda_val = Closure(params, Pair(Sym("begin"), body), env)
       env.bind(name, lambda_val)
       Void
     }

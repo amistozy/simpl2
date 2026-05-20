@@ -117,6 +117,27 @@ test "eval function shorthand" {
 }
 
 ///|
+test "eval lambda with multi-expression body" {
+  let env = @simpl.global_env()
+  // lambda body with multiple expressions
+  let _ = @simpl.eval(
+    @simpl.parse("(define f (lambda (x) (define y (+ x 1)) (* y 2)))"),
+    env,
+  )
+  inspect(@simpl.eval(@simpl.parse("(f 3)"), env), content="8")
+}
+
+///|
+test "eval define shorthand with multi-expression body" {
+  let env = @simpl.global_env()
+  let _ = @simpl.eval(
+    @simpl.parse("(define (g x) (define y (- x 1)) (+ y 10))"),
+    env,
+  )
+  inspect(@simpl.eval(@simpl.parse("(g 5)"), env), content="14")
+}
+
+///|
 test "eval begin" {
   let env = @simpl.global_env()
   inspect(
