@@ -7,7 +7,7 @@ SimpL（极简 Lisp）是一个面向教学的解释型 Lisp 方言，用约 100
 - **词法作用域** — 闭包捕获定义时的环境
 - **同像性** — 代码即数据，单一 `Value` 类型表达一切
 - **一等函数** — `lambda` 和内置过程都是 `Value`
-- **9 种特殊形式** — `quote` `if` `lambda` `define` `begin` `and` `or` `set!`
+- **11 种特殊形式** — `quote` `if` `cond` `lambda` `define` `let` `begin` `and` `or` `set!`
 - **24 个内置函数** — 算术、比较、列表、类型判断、输出
 - **递归下降解析器** — 手写，零外部解析依赖
 
@@ -15,7 +15,7 @@ SimpL（极简 Lisp）是一个面向教学的解释型 Lisp 方言，用约 100
 
 ```bash
 moon run cmd/main    # 进入 REPL
-moon test --target native   # 运行 20 个测试
+moon test --target native   # 运行 23 个测试
 ```
 
 ## REPL 命令
@@ -52,10 +52,15 @@ moon test --target native   # 运行 20 个测试
 (if <cond> <then> <else>)
 (if <cond> <then>)    ; 无 else 分支返回 Void
 
+(cond ((<test> <expr> ...) ...)
+      (else <expr> ...))  ; 多分支条件，else 始终匹配
+
 (lambda (<params>) <body>)
 
 (define <name> <value>)
 (define (<name> <params>) <body>)  ; 函数简写
+
+(let ((<var> <val>) ...) <body> ...)  ; 局部绑定，val 在外部环境求值
 
 (begin <expr> ...)    ; 顺序求值，返回最后一个
 
@@ -118,6 +123,16 @@ moon test --target native   # 运行 20 个测试
   (+ a b))              ; => 3
 ```
 
+```scheme
+(cond
+  ((< x 0) 'negative)
+  ((> x 0) 'positive)
+  (else 'zero))
+
+(let ((x 1) (y 2))
+  (+ x y))              ; => 3
+```
+
 ## 项目结构
 
 ```
@@ -126,7 +141,7 @@ simpl/
 ├── reader.mbt         # S-表达式解析器
 ├── builtins.mbt       # 24 个内置函数
 ├── eval.mbt           # 求值器与环境操作
-├── simpl_test.mbt     # 20 个黑盒测试
+├── simpl_test.mbt     # 23 个黑盒测试
 ├── editors/vscode/    # VS Code 语法高亮扩展
 └── cmd/main/
     └── main.mbt       # 异步 REPL

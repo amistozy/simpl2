@@ -2,7 +2,7 @@
 /// SimpL Evaluator — the heart of the interpreter.
 ///
 /// Evaluates an S-expression in a given lexical environment.
-/// Supports special forms: quote, if, lambda, define, begin, and, or, set!.
+/// Supports special forms: quote, if, cond, lambda, define, let, begin, and, or, set!.
 
 ///|
 /// Create an empty environment.
@@ -154,6 +154,40 @@ fn eval_or_rest(exprs : Value, env : Env) -> Value raise EvalError {
 }
 
 ///|
+/// Evaluate `cond` clauses. Each clause is (test expr ...).
+/// `else` as test is always truthy. No matching clause returns Void.
+fn eval_cond(clauses : Value, env : Env) -> Value raise EvalError {
+  match clauses {
+    Nil => Void
+    Pair(Pair(Sym("else"), body), _) => eval_sequence(body, env)
+    Pair(Pair(cond_test, cond_body), rest) =>
+      if is_truthy(eval(cond_test, env)) {
+        eval_sequence(cond_body, env)
+      } else {
+        eval_cond(rest, env)
+      }
+    _ => raise EvalError::TypeMismatch("cond", clauses.display())
+  }
+}
+
+///|
+/// Evaluate `let` bindings in the outer env, mutating new_env.
+fn eval_let_bindings(
+  bindings : Value,
+  env : Env,
+  new_env : Env,
+) -> Unit raise EvalError {
+  match bindings {
+    Nil => ()
+    Pair(Pair(Sym(name), Pair(val_expr, Nil)), rest) => {
+      new_env.bind(name, eval(val_expr, env))
+      eval_let_bindings(rest, env, new_env)
+    }
+    _ => raise EvalError::TypeMismatch("let bindings", bindings.display())
+  }
+}
+
+///|
 /// Evaluate all arguments in a list.
 fn eval_args(args : Value, env : Env) -> Array[Value] raise EvalError {
   fn go(v : Value, acc : Array[Value]) -> Array[Value] raise EvalError {
@@ -187,7 +221,7 @@ fn apply(fn_val : Value, args : Array[Value]) -> Value raise EvalError {
 ///
 /// Self-evaluating forms: Num, Str, Bool, Nil, Closure, BuiltinProc.
 /// Symbol: looked up in the environment.
-/// Special forms are matched by structure (quote, if, lambda, define, begin, and, or, set!).
+/// Special forms are matched by structure (quote, if, cond, lambda, define, let, begin, and, or, set!).
 /// Any other Pair is treated as function application.
 pub fn eval(expr : Value, env : Env) -> Value raise EvalError {
   match expr {
@@ -216,6 +250,9 @@ pub fn eval(expr : Value, env : Env) -> Value raise EvalError {
         Void
       }
 
+    // (cond (test expr ...) ...)  — multi-branch conditional
+    Pair(Sym("cond"), clauses) => eval_cond(clauses, env)
+
     // (lambda (<params>) <body>)
     Pair(Sym("lambda"), Pair(params, Pair(body, Nil))) =>
       Closure(params, body, env)
@@ -231,6 +268,13 @@ pub fn eval(expr : Value, env : Env) -> Value raise EvalError {
       let lambda_val = Closure(params, body_expr, env)
       env.bind(name, lambda_val)
       Void
+    }
+
+    // (let ((var val) ...) body ...)  — local bindings
+    Pair(Sym("let"), Pair(bindings, body)) => {
+      let new_env = { bindings: {}, parent: Some(env) }
+      eval_let_bindings(bindings, env, new_env)
+      eval_sequence(body, new_env)
     }
 
     // (begin <expr>...)

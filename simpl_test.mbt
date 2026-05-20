@@ -207,3 +207,54 @@ test "eval error: not callable" {
     _ => fail("Expected NotCallable error")
   }
 }
+
+///|
+test "eval cond" {
+  let env = @simpl.global_env()
+  // Multi-branch
+  inspect(
+    @simpl.eval(@simpl.parse("(cond (#f 1) (#t 2) (#t 3))"), env),
+    content="2",
+  )
+  // else clause
+  inspect(
+    @simpl.eval(@simpl.parse("(cond (#f 1) (else 42))"), env),
+    content="42",
+  )
+  // No match → Void
+  inspect(@simpl.eval(@simpl.parse("(cond (#f 1) (#f 2))"), env), content="")
+  // Body with multiple exprs
+  inspect(
+    @simpl.eval(@simpl.parse("(cond (#t (define x 5) x) (else 0))"), env),
+    content="5",
+  )
+}
+
+///|
+test "eval let" {
+  let env = @simpl.global_env()
+  inspect(
+    @simpl.eval(@simpl.parse("(let ((x 1) (y 2)) (+ x y))"), env),
+    content="3",
+  )
+  // Bindings evaluated in outer env (not sequential)
+  let _ = @simpl.eval(@simpl.parse("(define a 10)"), env)
+  inspect(@simpl.eval(@simpl.parse("(let ((a 5) (b a)) b)"), env), content="10")
+  // Body with multiple exprs
+  inspect(
+    @simpl.eval(@simpl.parse("(let ((x 7)) (define y (* x 2)) y)"), env),
+    content="14",
+  )
+}
+
+///|
+test "eval and/or short-circuit" {
+  let env = @simpl.global_env()
+  // and short-circuits on #f
+  inspect(@simpl.eval(@simpl.parse("(and #f 1)"), env), content="#f")
+  // or short-circuits on truthy
+  inspect(@simpl.eval(@simpl.parse("(or 1 2 3)"), env), content="1")
+  // empty (and) and (or)
+  inspect(@simpl.eval(@simpl.parse("(and)"), env), content="#t")
+  inspect(@simpl.eval(@simpl.parse("(or)"), env), content="#f")
+}

@@ -169,9 +169,13 @@ fn print_help() -> Unit {
     #|Special forms:
     #|  (quote <expr>)  or  '<expr>    — return expression unevaluated
     #|  (if <cond> <then> <else>)      — conditional evaluation
+    #|  (cond ((<test> <expr> ...) ...)  — multi-branch conditional
+    #|         (else <expr> ...))
     #|  (lambda (<params>) <body>)     — create a function
     #|  (define <name> <value>)        — define a variable
     #|  (define (<name> <params>) <body>) — define a function (shorthand)
+    #|  (let ((<var> <val>) ...)        — local bindings
+    #|        <body> ...)
     #|  (begin <expr> ...)             — evaluate in sequence
     #|  (and <expr> ...)               — short-circuit and
     #|  (or <expr> ...)                — short-circuit or
