@@ -102,7 +102,7 @@ pub impl Show for Value with to_string(self) -> String {
 ///|
 /// Format a number: drop trailing ".0" for integers.
 fn number_to_string(n : Double) -> String {
-  if n - n.floor() == 0.0 && !n.is_inf() && !n.is_nan() {
+  if n - n.floor() == 0.0 {
     n.to_int().to_string()
   } else {
     n.to_string()
