@@ -238,32 +238,6 @@ fn builtin_not(args : Array[Value]) -> Value raise EvalError {
 }
 
 ///|
-#warnings("-unused_error_type")
-fn builtin_and(args : Array[Value]) -> Value raise EvalError {
-  for v in args {
-    if !is_truthy(v) {
-      return Bool(false)
-    }
-  }
-  if args.length() == 0 {
-    Bool(true)
-  } else {
-    args[args.length() - 1]
-  }
-}
-
-///|
-#warnings("-unused_error_type")
-fn builtin_or(args : Array[Value]) -> Value raise EvalError {
-  for v in args {
-    if is_truthy(v) {
-      return v
-    }
-  }
-  Bool(false)
-}
-
-///|
 /// Register all built-in procedures into an environment.
 pub fn register_builtins(env : Env) -> Unit {
   env.bind("+", BuiltinProc("+", builtin_add))
@@ -288,8 +262,6 @@ pub fn register_builtins(env : Env) -> Unit {
   env.bind("display", BuiltinProc("display", builtin_display))
   env.bind("newline", BuiltinProc("newline", builtin_newline))
   env.bind("not", BuiltinProc("not", builtin_not))
-  env.bind("and", BuiltinProc("and", builtin_and))
-  env.bind("or", BuiltinProc("or", builtin_or))
   // Predefined constants
   env.bind("#t", Bool(true))
   env.bind("#f", Bool(false))

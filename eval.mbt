@@ -2,7 +2,7 @@
 /// SimpL Evaluator — the heart of the interpreter.
 ///
 /// Evaluates an S-expression in a given lexical environment.
-/// Supports special forms: quote, if, lambda, define, begin, set!.
+/// Supports special forms: quote, if, lambda, define, begin, and, or, set!.
 
 ///|
 /// Create an empty environment.
@@ -114,6 +114,46 @@ fn eval_sequence(exprs : Value, env : Env) -> Value raise EvalError {
 }
 
 ///|
+/// Short-circuit `and`: evaluate exprs left-to-right,
+/// return the first falsy value, or the last value if all are truthy.
+/// Empty `(and)` returns #t.
+fn eval_and_rest(exprs : Value, env : Env) -> Value raise EvalError {
+  match exprs {
+    Nil => Bool(true)
+    Pair(expr, Nil) => eval(expr, env)
+    Pair(expr, rest) => {
+      let val = eval(expr, env)
+      if !is_truthy(val) {
+        val
+      } else {
+        eval_and_rest(rest, env)
+      }
+    }
+    _ => raise EvalError::TypeMismatch("and", exprs.display())
+  }
+}
+
+///|
+/// Short-circuit `or`: evaluate exprs left-to-right,
+/// return the first truthy value, or #f if none are truthy.
+/// Empty `(or)` returns #f.
+fn eval_or_rest(exprs : Value, env : Env) -> Value raise EvalError {
+  match exprs {
+    Nil => Bool(false)
+    Pair(expr, Nil) => eval(expr, env)
+    Pair(expr, rest) => {
+      let val = eval(expr, env)
+      if is_truthy(val) {
+        val
+      } else {
+        eval_or_rest(rest, env)
+      }
+    }
+    _ => raise EvalError::TypeMismatch("or", exprs.display())
+  }
+}
+
+///|
 /// Evaluate all arguments in a list.
 fn eval_args(args : Value, env : Env) -> Array[Value] raise EvalError {
   fn go(v : Value, acc : Array[Value]) -> Array[Value] raise EvalError {
@@ -147,7 +187,7 @@ fn apply(fn_val : Value, args : Array[Value]) -> Value raise EvalError {
 ///
 /// Self-evaluating forms: Num, Str, Bool, Nil, Closure, BuiltinProc.
 /// Symbol: looked up in the environment.
-/// Special forms are matched by structure (quote, if, lambda, define, begin, set!).
+/// Special forms are matched by structure (quote, if, lambda, define, begin, and, or, set!).
 /// Any other Pair is treated as function application.
 pub fn eval(expr : Value, env : Env) -> Value raise EvalError {
   match expr {
@@ -195,6 +235,12 @@ pub fn eval(expr : Value, env : Env) -> Value raise EvalError {
 
     // (begin <expr>...)
     Pair(Sym("begin"), rest) => eval_sequence(rest, env)
+
+    // (and expr ...) — short-circuit; empty (and) → #t
+    Pair(Sym("and"), rest) => eval_and_rest(rest, env)
+
+    // (or expr ...) — short-circuit; empty (or) → #f
+    Pair(Sym("or"), rest) => eval_or_rest(rest, env)
 
     // (set! <name> <value>)
     Pair(Sym("set!"), Pair(Sym(name), Pair(val_expr, Nil))) => {

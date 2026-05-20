@@ -7,8 +7,8 @@ SimpL（极简 Lisp）是一个面向教学的解释型 Lisp 方言，用约 100
 - **词法作用域** — 闭包捕获定义时的环境
 - **同像性** — 代码即数据，单一 `Value` 类型表达一切
 - **一等函数** — `lambda` 和内置过程都是 `Value`
-- **7 种特殊形式** — `quote` `if` `lambda` `define` `begin` `set!`
-- **26 个内置函数** — 算术、比较、列表、类型判断、逻辑、输出
+- **9 种特殊形式** — `quote` `if` `lambda` `define` `begin` `and` `or` `set!`
+- **24 个内置函数** — 算术、比较、列表、类型判断、输出
 - **递归下降解析器** — 手写，零外部解析依赖
 
 ## 快速开始
@@ -59,6 +59,9 @@ moon test --target native   # 运行 20 个测试
 
 (begin <expr> ...)    ; 顺序求值，返回最后一个
 
+(and <expr> ...)      ; 短路求值：遇到 #f 立即返回，否则返回最后值；(and) => #t
+(or <expr> ...)       ; 短路求值：遇到真值立即返回，否则返回 #f；(or) => #f
+
 (set! <name> <value>) ; 修改已有变量
 ```
 
@@ -70,7 +73,7 @@ moon test --target native   # 运行 20 个测试
 | 比较 | `=` `<` `>` `<=` `>=` |
 | 列表 | `cons` `car` `cdr` `list` `null?` |
 | 类型判断 | `number?` `symbol?` `string?` `pair?` `bool?` |
-| 逻辑 | `not` `and` `or` |
+| 逻辑 | `not` |
 | 输出 | `display` `newline` |
 
 ### 示例
@@ -121,7 +124,7 @@ moon test --target native   # 运行 20 个测试
 simpl/
 ├── types.mbt          # Value / Env / 错误类型
 ├── reader.mbt         # S-表达式解析器
-├── builtins.mbt       # 26 个内置函数
+├── builtins.mbt       # 24 个内置函数
 ├── eval.mbt           # 求值器与环境操作
 ├── simpl_test.mbt     # 20 个黑盒测试
 ├── editors/vscode/    # VS Code 语法高亮扩展

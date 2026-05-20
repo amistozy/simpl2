@@ -173,6 +173,8 @@ fn print_help() -> Unit {
     #|  (define <name> <value>)        — define a variable
     #|  (define (<name> <params>) <body>) — define a function (shorthand)
     #|  (begin <expr> ...)             — evaluate in sequence
+    #|  (and <expr> ...)               — short-circuit and
+    #|  (or <expr> ...)                — short-circuit or
     #|  (set! <name> <value>)          — mutate a variable
     #|
     #|Built-in functions:
@@ -180,7 +182,7 @@ fn print_help() -> Unit {
     #|  Comparison:  =  <  >  <=  >=
     #|  Lists:  cons  car  cdr  list  null?
     #|  Predicates:  number?  symbol?  string?  pair?  bool?
-    #|  Logic:  not  and  or
+    #|  Logic:  not
     #|  Output:  display  newline
     #|
     #|Examples:
