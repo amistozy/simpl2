@@ -154,6 +154,27 @@ fn eval_or_rest(exprs : Value, env : Env) -> Value raise EvalError {
 }
 
 ///|
+/// CVT (Curried-define Value Transformer): transform (head params) body
+/// into (name, nested-lambda). See Racket's CVT meta-function.
+///
+/// (CVT id params body)       = (id . (lambda params body))
+/// (CVT (h . ps) params body) = (CVT h ps (lambda params body))
+fn cvt(
+  head : Value,
+  params : Value,
+  body : Value,
+) -> (String, Value) raise EvalError {
+  match head {
+    Sym(name) => (name, Pair(Sym("lambda"), Pair(params, body)))
+    Pair(inner_head, inner_params) => {
+      let inner_lambda = Pair(Sym("lambda"), Pair(params, body))
+      cvt(inner_head, inner_params, Pair(inner_lambda, Nil))
+    }
+    _ => raise EvalError::TypeMismatch("define head", head.display())
+  }
+}
+
+///|
 /// Evaluate `cond` clauses. Each clause is (test expr ...).
 /// `else` as test is always truthy. No matching clause returns Void.
 fn eval_cond(clauses : Value, env : Env) -> Value raise EvalError {
@@ -263,10 +284,11 @@ pub fn eval(expr : Value, env : Env) -> Value raise EvalError {
       env.bind(name, val)
       Void
     }
-    // (define (<name> <params>...) <body> ...)  — desugar to (define <name> (lambda <params> <body>))
+    // (define (<name> <params>...) <body> ...)  — CVT → nested lambdas
     Pair(Sym("define"), Pair(Pair(head, params), body)) => {
-      let lambda = Pair(Sym("lambda"), Pair(params, body))
-      eval(Pair(Sym("define"), Pair(head, Pair(lambda, Nil))), env)
+      let (name, lambda_expr) = cvt(head, params, body)
+      env.bind(name, eval(lambda_expr, env))
+      Void
     }
 
     // (let ((var val) ...) body ...)  — local bindings

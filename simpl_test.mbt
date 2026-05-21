@@ -140,10 +140,9 @@ test "eval define shorthand with multi-expression body" {
 ///|
 test "eval curried define" {
   let env = @simpl.global_env()
-  // (define ((make-adder n) x) (+ x n))
-  let _ = @simpl.eval(@simpl.parse("(define ((make-adder n) x) (+ x n))"), env)
-  let _ = @simpl.eval(@simpl.parse("(define add5 (make-adder 5))"), env)
-  inspect(@simpl.eval(@simpl.parse("(add5 10)"), env), content="15")
+  // (define ((foo x) y) (- x y)) → ((foo 3) 2) = 1
+  let _ = @simpl.eval(@simpl.parse("(define ((foo x) y) (- x y))"), env)
+  inspect(@simpl.eval(@simpl.parse("((foo 3) 2)"), env), content="1")
 }
 
 ///|
