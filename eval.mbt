@@ -263,11 +263,10 @@ pub fn eval(expr : Value, env : Env) -> Value raise EvalError {
       env.bind(name, val)
       Void
     }
-    // (define (<name> <params>...) <body> ...)  — function shorthand
-    Pair(Sym("define"), Pair(Pair(Sym(name), params), body)) => {
-      let lambda_val = Closure(params, Pair(Sym("begin"), body), env)
-      env.bind(name, lambda_val)
-      Void
+    // (define (<name> <params>...) <body> ...)  — desugar to (define <name> (lambda <params> <body>))
+    Pair(Sym("define"), Pair(Pair(head, params), body)) => {
+      let lambda = Pair(Sym("lambda"), Pair(params, body))
+      eval(Pair(Sym("define"), Pair(head, Pair(lambda, Nil))), env)
     }
 
     // (let ((var val) ...) body ...)  — local bindings
