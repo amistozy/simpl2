@@ -26,7 +26,6 @@ moon test --target native   # 运行 26 个测试
 | `:q`, `:quit` | 退出 |
 | `:clear`, `:cls` | 清屏 |
 | `:l <file>`, `:load <file>` | 加载并求值 SimpL 源文件 |
-| `Ctrl+D` | EOF 退出 |
 | `; comment` | 行注释 |
 
 ## 语言参考
@@ -52,8 +51,8 @@ moon test --target native   # 运行 26 个测试
 (if <cond> <then> <else>)
 (if <cond> <then>)    ; 无 else 分支返回 Void
 
-(cond (<test> <expr> ...) ...)  ; 多分支条件，找到第一个 truthy 子句
-      (else <expr> ...))        ; else 始终匹配
+(cond (<test> <expr> ...) ...         ; 多分支条件，找到第一个 truthy 子句
+      (else <expr> ...))              ; else 始终匹配
 
 (lambda (<params>) <body> ...)   ; body 支持多表达式
 

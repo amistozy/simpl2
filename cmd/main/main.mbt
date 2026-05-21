@@ -9,7 +9,7 @@
 async fn main {
   let env = @simpl.global_env()
   println("SimpL — A minimal Lisp for teaching")
-  println("Type :q or Ctrl+D to exit, :clear to clear, :h for help")
+  println("Type :q to exit, :clear to clear, :h for help")
   repl(env)
 }
 
@@ -169,14 +169,14 @@ fn print_help() -> Unit {
     #|Special forms:
     #|  (quote <expr>)  or  '<expr>    — return expression unevaluated
     #|  (if <cond> <then> <else>)      — conditional evaluation
-    #|  (cond ((<test> <expr> ...) ...)  — multi-branch conditional
-    #|         (else <expr> ...))
+    #|  (cond (<test> <expr> ...) ...    — multi-branch conditional
+    #|        (else <expr> ...))
     #|  (lambda (<params>) <body> ...)  — create a function (multi-expr body)
     #|  (define <name> <value>)        — define a variable
     #|  (define (<name> <params>) <body> ...) — function shorthand
     #|  (define ((<name> <params>) <params>) ...)  — curried shorthand
     #|  (let ((<var> <val>) ...)        — local bindings
-    #|        <body> ...)
+    #|    <body> ...)
     #|  (begin <expr> ...)             — evaluate in sequence
     #|  (and <expr> ...)               — short-circuit and
     #|  (or <expr> ...)                — short-circuit or
