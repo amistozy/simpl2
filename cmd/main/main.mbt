@@ -171,9 +171,10 @@ fn print_help() -> Unit {
     #|  (if <cond> <then> <else>)      — conditional evaluation
     #|  (cond ((<test> <expr> ...) ...)  — multi-branch conditional
     #|         (else <expr> ...))
-    #|  (lambda (<params>) <body>)     — create a function
+    #|  (lambda (<params>) <body> ...)  — create a function (multi-expr body)
     #|  (define <name> <value>)        — define a variable
-    #|  (define (<name> <params>) <body>) — define a function (shorthand)
+    #|  (define (<name> <params>) <body> ...) — function shorthand
+    #|  (define ((<name> <params>) <params>) ...)  — curried shorthand
     #|  (let ((<var> <val>) ...)        — local bindings
     #|        <body> ...)
     #|  (begin <expr> ...)             — evaluate in sequence
@@ -190,11 +191,11 @@ fn print_help() -> Unit {
     #|  Output:  display  newline
     #|
     #|Examples:
-    #|  (+ 1 2)                => 3
-    #|  (define x 10)          => ()   ; (no output in REPL)
-    #|  (if (> x 5) 'big 'small) => big
-    #|  (define (sq x) (* x x)) => ()   ; (no output in REPL)
+    #|  (+ 1 2 3)              => 6
+    #|  (define (sq x) (* x x)) => () ; (no output in REPL)
     #|  (sq 5)                 => 25
+    #|  (cond ((> x 0) 'pos) (else 'neg))
+    #|  (let ((x 1) (y 2)) (+ x y)) => 3
     #|
     #|REPL commands:
     #|  :h, :help          — show this help
