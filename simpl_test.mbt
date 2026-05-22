@@ -73,14 +73,31 @@ test "eval arithmetic" {
 ///|
 test "eval comparison" {
   let env = @simpl.global_env()
+  // = : chained equality
   inspect(@simpl.eval(@simpl.parse("(= 1 1)"), env), content="#t")
   inspect(@simpl.eval(@simpl.parse("(= 1 2)"), env), content="#f")
   inspect(@simpl.eval(@simpl.parse("(= 1 1 1)"), env), content="#t")
   inspect(@simpl.eval(@simpl.parse("(= 1 1 2)"), env), content="#f")
+  // < : chained less-than
   inspect(@simpl.eval(@simpl.parse("(< 1 2)"), env), content="#t")
   inspect(@simpl.eval(@simpl.parse("(< 2 1)"), env), content="#f")
+  inspect(@simpl.eval(@simpl.parse("(< 1 2 3)"), env), content="#t")
+  inspect(@simpl.eval(@simpl.parse("(< 1 3 2)"), env), content="#f")
+  inspect(@simpl.eval(@simpl.parse("(< 1 2 2)"), env), content="#f")
+  inspect(@simpl.eval(@simpl.parse("(< 1 2 3 4 5)"), env), content="#t")
+  // > : chained greater-than
   inspect(@simpl.eval(@simpl.parse("(> 1 2)"), env), content="#f")
   inspect(@simpl.eval(@simpl.parse("(> 2 1)"), env), content="#t")
+  inspect(@simpl.eval(@simpl.parse("(> 3 2 1)"), env), content="#t")
+  inspect(@simpl.eval(@simpl.parse("(> 3 1 2)"), env), content="#f")
+  // <= : chained less-or-equal
+  inspect(@simpl.eval(@simpl.parse("(<= 1 1)"), env), content="#t")
+  inspect(@simpl.eval(@simpl.parse("(<= 1 1 2)"), env), content="#t")
+  inspect(@simpl.eval(@simpl.parse("(<= 1 2 1)"), env), content="#f")
+  // >= : chained greater-or-equal
+  inspect(@simpl.eval(@simpl.parse("(>= 2 2)"), env), content="#t")
+  inspect(@simpl.eval(@simpl.parse("(>= 3 3 1)"), env), content="#t")
+  inspect(@simpl.eval(@simpl.parse("(>= 3 1 3)"), env), content="#f")
 }
 
 ///|

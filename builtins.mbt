@@ -71,7 +71,9 @@ fn builtin_div(args : Array[Value]) -> Value raise EvalError {
 fn builtin_eq(args : Array[Value]) -> Value raise EvalError {
   check_min_arity("=", 2, args.length())
   for i in 0..<(args.length() - 1) {
-    if !num_eq(args[i], args[i + 1]) {
+    let x = expect_num("=", args[i])
+    let y = expect_num("=", args[i + 1])
+    if x != y {
       return Bool(false)
     }
   }
@@ -79,43 +81,55 @@ fn builtin_eq(args : Array[Value]) -> Value raise EvalError {
 }
 
 ///|
-fn num_eq(a : Value, b : Value) -> Bool {
-  match (a, b) {
-    (Num(x), Num(y)) => x == y
-    _ => false
-  }
-}
-
-///|
 fn builtin_lt(args : Array[Value]) -> Value raise EvalError {
-  check_arity("<", 2, args.length())
-  let x = expect_num("<", args[0])
-  let y = expect_num("<", args[1])
-  Bool(x < y)
+  check_min_arity("<", 2, args.length())
+  for i in 0..<(args.length() - 1) {
+    let x = expect_num("<", args[i])
+    let y = expect_num("<", args[i + 1])
+    if x >= y {
+      return Bool(false)
+    }
+  }
+  Bool(true)
 }
 
 ///|
 fn builtin_gt(args : Array[Value]) -> Value raise EvalError {
-  check_arity(">", 2, args.length())
-  let x = expect_num(">", args[0])
-  let y = expect_num(">", args[1])
-  Bool(x > y)
+  check_min_arity(">", 2, args.length())
+  for i in 0..<(args.length() - 1) {
+    let x = expect_num(">", args[i])
+    let y = expect_num(">", args[i + 1])
+    if x <= y {
+      return Bool(false)
+    }
+  }
+  Bool(true)
 }
 
 ///|
 fn builtin_le(args : Array[Value]) -> Value raise EvalError {
-  check_arity("<=", 2, args.length())
-  let x = expect_num("<=", args[0])
-  let y = expect_num("<=", args[1])
-  Bool(x <= y)
+  check_min_arity("<=", 2, args.length())
+  for i in 0..<(args.length() - 1) {
+    let x = expect_num("<=", args[i])
+    let y = expect_num("<=", args[i + 1])
+    if x > y {
+      return Bool(false)
+    }
+  }
+  Bool(true)
 }
 
 ///|
 fn builtin_ge(args : Array[Value]) -> Value raise EvalError {
-  check_arity(">=", 2, args.length())
-  let x = expect_num(">=", args[0])
-  let y = expect_num(">=", args[1])
-  Bool(x >= y)
+  check_min_arity(">=", 2, args.length())
+  for i in 0..<(args.length() - 1) {
+    let x = expect_num(">=", args[i])
+    let y = expect_num(">=", args[i + 1])
+    if x < y {
+      return Bool(false)
+    }
+  }
+  Bool(true)
 }
 
 ///|

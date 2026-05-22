@@ -95,7 +95,7 @@ pub fn Value::display(self : Value) -> String {
 
 ///|
 /// Implement Show for Value (for inspect in tests).
-pub impl Show for Value with to_string(self) -> String {
+pub impl Show for Value with fn to_string(self) -> String {
   self.display()
 }
 
