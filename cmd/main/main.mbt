@@ -192,7 +192,7 @@ fn print_help() -> Unit {
     #|
     #|Examples:
     #|  (+ 1 2 3)              => 6
-    #|  (define (sq x) (* x x)) => () ; (no output in REPL)
+    #|  (define (sq x) (* x x)) => #<void> ; (no output in REPL)
     #|  (sq 5)                 => 25
     #|  (cond ((> x 0) 'pos) (else 'neg))
     #|  (let ((x 1) (y 2)) (+ x y)) => 3

@@ -85,7 +85,7 @@ pub fn Value::display(self : Value) -> String {
     Str(s) => "\"\{s}\""
     Bool(true) => "#t"
     Bool(false) => "#f"
-    Void => ""
+    Void => "#<void>"
     Nil => "()"
     Pair(_, _) => "(\{self.pair_string()})"
     Closure(_, _, _) => "#<closure>"

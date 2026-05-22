@@ -106,7 +106,7 @@ test "eval if" {
   inspect(@simpl.eval(@simpl.parse("(if #t 1 2)"), env), content="1")
   inspect(@simpl.eval(@simpl.parse("(if #f 1 2)"), env), content="2")
   inspect(@simpl.eval(@simpl.parse("(if #t 42)"), env), content="42")
-  inspect(@simpl.eval(@simpl.parse("(if #f 42)"), env), content="")
+  inspect(@simpl.eval(@simpl.parse("(if #f 42)"), env), content="#<void>")
 }
 
 ///|
@@ -268,7 +268,10 @@ test "eval cond" {
     content="42",
   )
   // No match → Void
-  inspect(@simpl.eval(@simpl.parse("(cond (#f 1) (#f 2))"), env), content="")
+  inspect(
+    @simpl.eval(@simpl.parse("(cond (#f 1) (#f 2))"), env),
+    content="#<void>",
+  )
   // Body with multiple exprs
   inspect(
     @simpl.eval(@simpl.parse("(cond (#t (define x 5) x) (else 0))"), env),
