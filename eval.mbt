@@ -2,7 +2,6 @@
 /// SimpL Evaluator — the heart of the interpreter.
 ///
 /// Evaluates an S-expression in a given lexical environment.
-/// Supports special forms: quote, if, cond, lambda, define, let, begin, and, or, set!.
 
 ///|
 /// Create an empty environment.
