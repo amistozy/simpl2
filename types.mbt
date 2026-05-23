@@ -117,8 +117,8 @@ fn Value::pair_string(self : Value) -> String {
     Pair(car, cdr) =>
       match cdr {
         Nil => car.to_string()
-        Pair(_, _) => "\{car.to_string()} \{cdr.pair_string()}"
-        _ => "\{car.to_string()} . \{cdr.to_string()}"
+        Pair(_, _) => "\{car} \{cdr.pair_string()}"
+        _ => "\{car} . \{cdr}"
       }
     _ => ""
   }
