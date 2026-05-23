@@ -304,12 +304,21 @@ pub fn eval(expr : Value, env : Env) -> Value raise EvalError {
       } else {
         eval(else_expr, env)
       }
-    // (if <cond> <then>)  — no else clause, returns Void
-    Pair(Sym("if"), Pair(cond, Pair(then_expr, Nil))) =>
-      if is_truthy(eval(cond, env)) {
-        eval(then_expr, env)
+
+    // (when <test> <body> ...)  — execute body if test truthy, else Void
+    Pair(Sym("when"), Pair(test_expr, body)) =>
+      if is_truthy(eval(test_expr, env)) {
+        eval_sequence(body, env)
       } else {
         Void
+      }
+
+    // (unless <test> <body> ...)  — execute body if test falsy, else Void
+    Pair(Sym("unless"), Pair(test_expr, body)) =>
+      if is_truthy(eval(test_expr, env)) {
+        Void
+      } else {
+        eval_sequence(body, env)
       }
 
     // (cond (test expr ...) ...)  — multi-branch conditional

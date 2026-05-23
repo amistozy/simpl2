@@ -126,8 +126,23 @@ test "eval if" {
   let env = global_env()
   inspect(eval(parse("(if #t 1 2)"), env), content="1")
   inspect(eval(parse("(if #f 1 2)"), env), content="2")
-  inspect(eval(parse("(if #t 42)"), env), content="42")
-  inspect(eval(parse("(if #f 42)"), env), content="#<void>")
+}
+
+///|
+test "eval when/unless" {
+  let env = global_env()
+  // when truthy executes body
+  inspect(eval(parse("(when #t 42)"), env), content="42")
+  // when falsy returns Void
+  inspect(eval(parse("(when #f 42)"), env), content="#<void>")
+  // when with multi-expression body
+  inspect(eval(parse("(when #t (define x 5) x)"), env), content="5")
+  // unless falsy executes body
+  inspect(eval(parse("(unless #f 42)"), env), content="42")
+  // unless truthy returns Void
+  inspect(eval(parse("(unless #t 42)"), env), content="#<void>")
+  // unless with multi-expression body
+  inspect(eval(parse("(unless #f (define x 7) x)"), env), content="7")
 }
 
 ///|
