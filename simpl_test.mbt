@@ -76,6 +76,11 @@ test "eval arithmetic" {
   inspect(@simpl.eval(@simpl.parse("(sub1 42)"), env), content="41")
   inspect(@simpl.eval(@simpl.parse("(sub1 0)"), env), content="-1")
   inspect(@simpl.eval(@simpl.parse("(sub1 3.5)"), env), content="2.5")
+  // zero?
+  inspect(@simpl.eval(@simpl.parse("(zero? 0)"), env), content="#t")
+  inspect(@simpl.eval(@simpl.parse("(zero? 1)"), env), content="#f")
+  inspect(@simpl.eval(@simpl.parse("(zero? -1)"), env), content="#f")
+  inspect(@simpl.eval(@simpl.parse("(zero? 0.0)"), env), content="#t")
 }
 
 ///|
@@ -325,10 +330,10 @@ test "eval let*" {
   // Mutual recursion
   let program =
     #|(let* ((is-even? (lambda (n)
-    #|                    (or (= n 0)
+    #|                    (or (zero? n)
     #|                        (is-odd? (sub1 n)))))
     #|       (is-odd? (lambda (n)
-    #|                  (and (not (= n 0))
+    #|                  (and (not (zero? n))
     #|                       (is-even? (sub1 n))))))
     #|  (is-odd? 11))
   inspect(@simpl.eval(@simpl.parse(program), env), content="#t")

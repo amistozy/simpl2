@@ -77,6 +77,12 @@ fn builtin_sub1(args : Array[Value]) -> Value raise EvalError {
 }
 
 ///|
+fn builtin_zero_p(args : Array[Value]) -> Value raise EvalError {
+  check_arity("zero?", 1, args.length())
+  Bool(expect_num("zero?", args[0]) == 0.0)
+}
+
+///|
 /// ------------------ Comparison ------------------
 
 ///|
@@ -272,6 +278,7 @@ pub fn register_builtins(env : Env) -> Unit {
   env.bind("/", BuiltinProc("/", builtin_div))
   env.bind("add1", BuiltinProc("add1", builtin_add1))
   env.bind("sub1", BuiltinProc("sub1", builtin_sub1))
+  env.bind("zero?", BuiltinProc("zero?", builtin_zero_p))
   env.bind("=", BuiltinProc("=", builtin_eq))
   env.bind("<", BuiltinProc("<", builtin_lt))
   env.bind(">", BuiltinProc(">", builtin_gt))
