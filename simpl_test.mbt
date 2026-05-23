@@ -68,6 +68,14 @@ test "eval arithmetic" {
   inspect(@simpl.eval(@simpl.parse("(* 2 3 4)"), env), content="24")
   inspect(@simpl.eval(@simpl.parse("(/ 10 2)"), env), content="5")
   inspect(@simpl.eval(@simpl.parse("(/ 10)"), env), content="0.1")
+  // add1 / sub1
+  inspect(@simpl.eval(@simpl.parse("(add1 0)"), env), content="1")
+  inspect(@simpl.eval(@simpl.parse("(add1 41)"), env), content="42")
+  inspect(@simpl.eval(@simpl.parse("(add1 -1)"), env), content="0")
+  inspect(@simpl.eval(@simpl.parse("(sub1 1)"), env), content="0")
+  inspect(@simpl.eval(@simpl.parse("(sub1 42)"), env), content="41")
+  inspect(@simpl.eval(@simpl.parse("(sub1 0)"), env), content="-1")
+  inspect(@simpl.eval(@simpl.parse("(sub1 3.5)"), env), content="2.5")
 }
 
 ///|

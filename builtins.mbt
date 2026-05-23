@@ -65,6 +65,18 @@ fn builtin_div(args : Array[Value]) -> Value raise EvalError {
 }
 
 ///|
+fn builtin_add1(args : Array[Value]) -> Value raise EvalError {
+  check_arity("add1", 1, args.length())
+  Num(expect_num("add1", args[0]) + 1.0)
+}
+
+///|
+fn builtin_sub1(args : Array[Value]) -> Value raise EvalError {
+  check_arity("sub1", 1, args.length())
+  Num(expect_num("sub1", args[0]) - 1.0)
+}
+
+///|
 /// ------------------ Comparison ------------------
 
 ///|
@@ -258,6 +270,8 @@ pub fn register_builtins(env : Env) -> Unit {
   env.bind("-", BuiltinProc("-", builtin_sub))
   env.bind("*", BuiltinProc("*", builtin_mul))
   env.bind("/", BuiltinProc("/", builtin_div))
+  env.bind("add1", BuiltinProc("add1", builtin_add1))
+  env.bind("sub1", BuiltinProc("sub1", builtin_sub1))
   env.bind("=", BuiltinProc("=", builtin_eq))
   env.bind("<", BuiltinProc("<", builtin_lt))
   env.bind(">", BuiltinProc(">", builtin_gt))
