@@ -227,6 +227,29 @@ fn eval_let_star_bindings(
 }
 
 ///|
+/// Split named-let bindings into (params, init-exprs).
+/// ((arg1 init1) (arg2 init2) ...) → ([arg1 arg2 ...], [init1 init2 ...])
+fn split_named_let_bindings(bindings : Value) -> (Value, Value) raise EvalError {
+  fn go(
+    v : Value,
+    params_acc : Array[Value],
+    inits_acc : Array[Value],
+  ) -> (Value, Value) raise EvalError {
+    match v {
+      Nil => (list_from_array(params_acc), list_from_array(inits_acc))
+      Pair(Pair(Sym(arg), Pair(init, Nil)), rest) => {
+        params_acc.push(Sym(arg))
+        inits_acc.push(init)
+        go(rest, params_acc, inits_acc)
+      }
+      _ =>
+        raise EvalError::TypeMismatch("named let bindings", bindings.display())
+    }
+  }
+  go(bindings, [], [])
+}
+
+///|
 /// Evaluate all arguments in a list.
 fn eval_args(args : Value, env : Env) -> Array[Value] raise EvalError {
   fn go(v : Value, acc : Array[Value]) -> Array[Value] raise EvalError {
@@ -307,6 +330,22 @@ pub fn eval(expr : Value, env : Env) -> Value raise EvalError {
       let (name, lambda_expr) = cvt(head, params, body)
       env.bind(name, eval(lambda_expr, env))
       Void
+    }
+
+    // (let proc-id ((arg init) ...) body ...)  — named let
+    // → ((let* ((proc-id (lambda (arg ...) body ...))) proc-id) init ...)
+    Pair(Sym("let"), Pair(Sym(proc_id), Pair(bindings, body))) => {
+      let (params, init_exprs) = split_named_let_bindings(bindings)
+      let lambda_expr = Pair(Sym("lambda"), Pair(params, body))
+      let let_star_binding = Pair(Sym(proc_id), Pair(lambda_expr, Nil))
+      let let_star_bindings = Pair(let_star_binding, Nil)
+      let let_star_body = Sym(proc_id)
+      let let_star = Pair(
+        Sym("let*"),
+        Pair(let_star_bindings, Pair(let_star_body, Nil)),
+      )
+      let call = Pair(let_star, init_exprs)
+      eval(call, env)
     }
 
     // (let ((var val) ...) body ...)  — local bindings

@@ -340,6 +340,21 @@ test "eval let*" {
 }
 
 ///|
+test "eval named let" {
+  let env = @simpl.global_env()
+  // Factorial
+  let fac_prog =
+    #|(let fac ((n 10))
+    #|  (if (zero? n) 1 (* n (fac (sub1 n)))))
+  inspect(@simpl.eval(@simpl.parse(fac_prog), env), content="3628800")
+  // Loop-style iteration
+  let loop_prog =
+    #|(let loop ((i 0) (acc 0))
+    #|  (if (< i 5) (loop (add1 i) (+ acc i)) acc))
+  inspect(@simpl.eval(@simpl.parse(loop_prog), env), content="10")
+}
+
+///|
 test "eval and/or short-circuit" {
   let env = @simpl.global_env()
   // and short-circuits on #f
