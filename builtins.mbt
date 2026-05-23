@@ -83,6 +83,18 @@ fn builtin_zero_p(args : Array[Value]) -> Value raise EvalError {
 }
 
 ///|
+fn builtin_positive_p(args : Array[Value]) -> Value raise EvalError {
+  check_arity("positive?", 1, args.length())
+  Bool(expect_num("positive?", args[0]) > 0.0)
+}
+
+///|
+fn builtin_negative_p(args : Array[Value]) -> Value raise EvalError {
+  check_arity("negative?", 1, args.length())
+  Bool(expect_num("negative?", args[0]) < 0.0)
+}
+
+///|
 /// ------------------ Comparison ------------------
 
 ///|
@@ -279,6 +291,8 @@ pub fn register_builtins(env : Env) -> Unit {
   env.bind("add1", BuiltinProc("add1", builtin_add1))
   env.bind("sub1", BuiltinProc("sub1", builtin_sub1))
   env.bind("zero?", BuiltinProc("zero?", builtin_zero_p))
+  env.bind("positive?", BuiltinProc("positive?", builtin_positive_p))
+  env.bind("negative?", BuiltinProc("negative?", builtin_negative_p))
   env.bind("=", BuiltinProc("=", builtin_eq))
   env.bind("<", BuiltinProc("<", builtin_lt))
   env.bind(">", BuiltinProc(">", builtin_gt))

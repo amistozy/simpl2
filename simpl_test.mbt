@@ -82,6 +82,13 @@ test "eval arithmetic" {
   inspect(eval(parse("(zero? 1)"), env), content="#f")
   inspect(eval(parse("(zero? -1)"), env), content="#f")
   inspect(eval(parse("(zero? 0.0)"), env), content="#t")
+  // positive? / negative?
+  inspect(eval(parse("(positive? 1)"), env), content="#t")
+  inspect(eval(parse("(positive? 0)"), env), content="#f")
+  inspect(eval(parse("(positive? -1)"), env), content="#f")
+  inspect(eval(parse("(negative? -1)"), env), content="#t")
+  inspect(eval(parse("(negative? 0)"), env), content="#f")
+  inspect(eval(parse("(negative? 1)"), env), content="#f")
 }
 
 ///|
