@@ -209,6 +209,24 @@ fn eval_let_bindings(
 }
 
 ///|
+/// Evaluate `let*` bindings sequentially in the new env (letrec-style).
+/// Each val is evaluated in the new env, so later bindings can see
+/// earlier ones and closures can reference each other for mutual recursion.
+fn eval_let_star_bindings(
+  bindings : Value,
+  new_env : Env,
+) -> Unit raise EvalError {
+  match bindings {
+    Nil => ()
+    Pair(Pair(Sym(name), Pair(val_expr, Nil)), rest) => {
+      new_env.bind(name, eval(val_expr, new_env))
+      eval_let_star_bindings(rest, new_env)
+    }
+    _ => raise EvalError::TypeMismatch("let* bindings", bindings.display())
+  }
+}
+
+///|
 /// Evaluate all arguments in a list.
 fn eval_args(args : Value, env : Env) -> Array[Value] raise EvalError {
   fn go(v : Value, acc : Array[Value]) -> Array[Value] raise EvalError {
@@ -295,6 +313,13 @@ pub fn eval(expr : Value, env : Env) -> Value raise EvalError {
     Pair(Sym("let"), Pair(bindings, body)) => {
       let new_env = { bindings: {}, parent: Some(env) }
       eval_let_bindings(bindings, env, new_env)
+      eval_sequence(body, new_env)
+    }
+
+    // (let* ((var val) ...) body ...)  — sequential / letrec-style
+    Pair(Sym("let*"), Pair(bindings, body)) => {
+      let new_env = { bindings: {}, parent: Some(env) }
+      eval_let_star_bindings(bindings, new_env)
       eval_sequence(body, new_env)
     }
 

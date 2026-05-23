@@ -305,6 +305,36 @@ test "eval let" {
 }
 
 ///|
+test "eval let*" {
+  let env = @simpl.global_env()
+  // Sequential bindings
+  inspect(
+    @simpl.eval(@simpl.parse("(let* ((x 1) (y 2)) (+ x y))"), env),
+    content="3",
+  )
+  // Later bindings see earlier ones
+  inspect(
+    @simpl.eval(@simpl.parse("(let* ((x 1) (y (+ x 1))) (list y x))"), env),
+    content="(2 1)",
+  )
+  // Body with multiple exprs
+  inspect(
+    @simpl.eval(@simpl.parse("(let* ((x 7)) (define y (* x 2)) y)"), env),
+    content="14",
+  )
+  // Mutual recursion
+  let program =
+    #|(let* ((is-even? (lambda (n)
+    #|                    (or (= n 0)
+    #|                        (is-odd? (sub1 n)))))
+    #|       (is-odd? (lambda (n)
+    #|                  (and (not (= n 0))
+    #|                       (is-even? (sub1 n))))))
+    #|  (is-odd? 11))
+  inspect(@simpl.eval(@simpl.parse(program), env), content="#t")
+}
+
+///|
 test "eval and/or short-circuit" {
   let env = @simpl.global_env()
   // and short-circuits on #f
