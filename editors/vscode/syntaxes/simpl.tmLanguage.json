@@ -54,11 +54,11 @@
     },
     "keyword": {
       "name": "keyword.control.simpl",
-      "match": "\\b(define|lambda|if|quote|begin|set!)\\b"
+      "match": "\\b(define|lambda|if|quote|begin|set!|cond|let\\*?|when|unless|and|or)\\b"
     },
     "builtin": {
       "name": "support.function.simpl",
-      "match": "\\b(cons|car|cdr|list|display|newline|not|and|or|null\\?|number\\?|symbol\\?|string\\?|pair\\?|bool\\?|[+\\-*/=<>]=?)\\b"
+      "match": "\\b(cons|car|cdr|list|display|newline|not|null\\?|number\\?|symbol\\?|string\\?|pair\\?|bool\\?|zero\\?|positive\\?|negative\\?|add1|sub1|[+\\-*/=<>]=?)\\b"
     },
     "constant": {
       "name": "constant.language.simpl",
