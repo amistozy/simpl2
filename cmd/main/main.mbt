@@ -164,45 +164,56 @@ async fn handle_input(input : String, env : @simpl.Env) -> Unit {
 fn print_help() -> Unit {
   let help_text =
     #|SimpL Help
-    #|---------
+    #|----------
     #|
     #|Special forms:
-    #|  (quote <expr>)  or  '<expr>    — return expression unevaluated
-    #|  (if <cond> <then> <else>)      — conditional evaluation
+    #|  (quote <expr>)  or  '<expr>      — return expression unevaluated
+    #|  (if <cond> <then> <else>)        — conditional (else required)
+    #|  (when <test> <body> ...)         — execute body if test truthy
+    #|  (unless <test> <body> ...)       — execute body if test falsy
     #|  (cond (<test> <expr> ...) ...    — multi-branch conditional
     #|        (else <expr> ...))
-    #|  (lambda (<params>) <body> ...)  — create a function (multi-expr body)
-    #|  (define <name> <value>)        — define a variable
-    #|  (define (<name> <params>) <body> ...) — function shorthand
-    #|  (define ((<name> <params>) <params>) ...)  — curried shorthand
-    #|  (let ((<var> <val>) ...)        — local bindings
+    #|  (lambda (<params>) <body> ...)   — create a function
+    #|  (define <name> <value>)          — define a variable
+    #|  (define (<name> <params>)        — function shorthand
     #|    <body> ...)
-    #|  (begin <expr> ...)             — evaluate in sequence
-    #|  (and <expr> ...)               — short-circuit and
-    #|  (or <expr> ...)                — short-circuit or
-    #|  (set! <name> <value>)          — mutate a variable
+    #|  (define ((<name> <p1>) <p2>)     — curried shorthand
+    #|    <body> ...)
+    #|  (let ((<var> <val>) ...)         — local bindings (outer env)
+    #|    <body> ...)
+    #|  (let* ((<var> <val>) ...)        — sequential bindings (new env)
+    #|    <body> ...)
+    #|  (let <proc> ((<arg> <init>) ...) — named let (recursion + call)
+    #|    <body> ...)
+    #|  (begin <expr> ...)               — evaluate in sequence
+    #|  (and <expr> ...)                 — short-circuit and
+    #|  (or <expr> ...)                  — short-circuit or
+    #|  (set! <name> <value>)            — mutate a variable
     #|
     #|Built-in functions:
-    #|  Arithmetic:  +  -  *  /
-    #|  Comparison:  =  <  >  <=  >=
-    #|  Lists:  cons  car  cdr  list  null?
-    #|  Predicates:  number?  symbol?  string?  pair?  bool?
-    #|  Logic:  not
-    #|  Output:  display  newline
+    #|  Arithmetic:    +  -  *  /  add1  sub1
+    #|  Comparison:    =  <  >  <=  >=   (all support chaining)
+    #|  Number preds:  zero?  positive?  negative?
+    #|  Type preds:    number?  symbol?  string?  pair?  bool?
+    #|  Lists:         cons  car  cdr  list  null?
+    #|  Logic:         not
+    #|  Output:        display  newline
     #|
     #|Examples:
-    #|  (+ 1 2 3)              => 6
-    #|  (define (sq x) (* x x)) => #<void> ; (no output in REPL)
-    #|  (sq 5)                 => 25
-    #|  (cond ((> x 0) 'pos) (else 'neg))
-    #|  (let ((x 1) (y 2)) (+ x y)) => 3
+    #|  (+ 1 2 3)                         => 6
+    #|  (< 1 2 3 4 5)                     => #t
+    #|  (define (sq x) (* x x))           => #<void>
+    #|  (sq 5)                            => 25
+    #|  (when (positive? -5) (display "x")) => #<void>
+    #|  (let* ((x 1) (y (+ x 1))) (list y x))  => (2 1)
+    #|  (let fac ((n 5))                  => 120
+    #|    (if (zero? n) 1 (* n (fac (sub1 n)))))
     #|
     #|REPL commands:
-    #|  :h, :help          — show this help
-    #|  :q, :quit          — exit the REPL
-    #|  :clear, :cls       — clear the screen
-    #|  :l <file>, :load <file> — load and evaluate a SimpL file
-    #|  ; comment          — line comments are supported
+    #|  :h, :help              — show this help
+    #|  :q, :quit              — exit
+    #|  :clear, :cls           — clear screen
+    #|  :l <file>, :load <file>  — load and evaluate a SimpL file
     #|,
   println(help_text)
 }
