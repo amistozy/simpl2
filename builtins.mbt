@@ -284,35 +284,37 @@ fn builtin_not(args : Array[Value]) -> Value raise EvalError {
 ///|
 /// Register all built-in procedures into an environment.
 pub fn register_builtins(env : Env) -> Unit {
-  env.bind("+", BuiltinProc("+", builtin_add))
-  env.bind("-", BuiltinProc("-", builtin_sub))
-  env.bind("*", BuiltinProc("*", builtin_mul))
-  env.bind("/", BuiltinProc("/", builtin_div))
-  env.bind("add1", BuiltinProc("add1", builtin_add1))
-  env.bind("sub1", BuiltinProc("sub1", builtin_sub1))
-  env.bind("zero?", BuiltinProc("zero?", builtin_zero_p))
-  env.bind("positive?", BuiltinProc("positive?", builtin_positive_p))
-  env.bind("negative?", BuiltinProc("negative?", builtin_negative_p))
-  env.bind("=", BuiltinProc("=", builtin_eq))
-  env.bind("<", BuiltinProc("<", builtin_lt))
-  env.bind(">", BuiltinProc(">", builtin_gt))
-  env.bind("<=", BuiltinProc("<=", builtin_le))
-  env.bind(">=", BuiltinProc(">=", builtin_ge))
-  env.bind("cons", BuiltinProc("cons", builtin_cons))
-  env.bind("car", BuiltinProc("car", builtin_car))
-  env.bind("cdr", BuiltinProc("cdr", builtin_cdr))
-  env.bind("list", BuiltinProc("list", builtin_list))
-  env.bind("null?", BuiltinProc("null?", builtin_is_null))
-  env.bind("number?", BuiltinProc("number?", builtin_is_number))
-  env.bind("symbol?", BuiltinProc("symbol?", builtin_is_symbol))
-  env.bind("string?", BuiltinProc("string?", builtin_is_string))
-  env.bind("pair?", BuiltinProc("pair?", builtin_is_pair))
-  env.bind("bool?", BuiltinProc("bool?", builtin_is_bool))
-  env.bind("display", BuiltinProc("display", builtin_display))
-  env.bind("newline", BuiltinProc("newline", builtin_newline))
-  env.bind("not", BuiltinProc("not", builtin_not))
-  // Predefined constants
-  env.bind("#t", Bool(true))
-  env.bind("#f", Bool(false))
-  env.bind("nil", Nil)
+  let builtins = [
+    ("+", builtin_add),
+    ("-", builtin_sub),
+    ("*", builtin_mul),
+    ("/", builtin_div),
+    ("add1", builtin_add1),
+    ("sub1", builtin_sub1),
+    ("zero?", builtin_zero_p),
+    ("positive?", builtin_positive_p),
+    ("negative?", builtin_negative_p),
+    ("=", builtin_eq),
+    ("<", builtin_lt),
+    (">", builtin_gt),
+    ("<=", builtin_le),
+    (">=", builtin_ge),
+    ("cons", builtin_cons),
+    ("car", builtin_car),
+    ("cdr", builtin_cdr),
+    ("list", builtin_list),
+    ("null?", builtin_is_null),
+    ("number?", builtin_is_number),
+    ("symbol?", builtin_is_symbol),
+    ("string?", builtin_is_string),
+    ("pair?", builtin_is_pair),
+    ("bool?", builtin_is_bool),
+    ("display", builtin_display),
+    ("newline", builtin_newline),
+    ("not", builtin_not),
+  ]
+  for pair in builtins {
+    let (name, f) = pair
+    env.bind(name, BuiltinProc(name, f))
+  }
 }
