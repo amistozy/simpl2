@@ -146,13 +146,14 @@ fn parse_atom(input : String, pos : Int) -> (Value, Int) {
 /// Parse a string literal: "hello world".
 /// Supports basic escapes: \\n \\t \\\\ \\".
 fn parse_string(input : String, pos : Int) -> (Value, Int) raise ParseError {
-  fn go(i : Int, buf : StringBuilder) -> (Value, Int) raise ParseError {
+  let buf = StringBuilder()
+  for i = pos + 1 {
     if i >= input.length() {
       raise ParseError::UnexpectedEof(pos~)
     }
     match input.get_char(i) {
       None => raise ParseError::UnexpectedEof(pos~)
-      Some('"') => (Str(buf.to_string()), i + 1)
+      Some('"') => break (Str(buf.to_string()), i + 1)
       Some('\\') => {
         if i + 1 >= input.length() {
           raise ParseError::UnexpectedEof(pos=i)
@@ -161,30 +162,29 @@ fn parse_string(input : String, pos : Int) -> (Value, Int) raise ParseError {
           None => raise ParseError::UnexpectedEof(pos=i)
           Some('n') => {
             buf.write_char('\n')
-            go(i + 2, buf)
+            continue i + 2
           }
           Some('t') => {
             buf.write_char('\t')
-            go(i + 2, buf)
+            continue i + 2
           }
           Some('\\') => {
             buf.write_char('\\')
-            go(i + 2, buf)
+            continue i + 2
           }
           Some('"') => {
             buf.write_char('"')
-            go(i + 2, buf)
+            continue i + 2
           }
           Some(ch) => raise ParseError::InvalidEscape(char=ch, pos=i + 1)
         }
       }
       Some(ch) => {
         buf.write_char(ch)
-        go(i + 1, buf)
+        continue i + 1
       }
     }
   }
-  go(pos + 1, StringBuilder::new())
 }
 
 ///|
@@ -201,7 +201,7 @@ fn parse_hash_token(input : String, pos : Int) -> (Value, Int) {
   match token {
     "t" => (Bool(true), end)
     "f" => (Bool(false), end)
-    _ => (Sym("#" + token), end)
+    _ => (Sym("#\{token}"), end)
   }
 }
 
@@ -235,15 +235,15 @@ fn skip_trailing(input : String, pos : Int) -> Int {
 /// Parse zero or more s-expressions from a string.
 /// Useful for REPL input which may contain multiple expressions.
 pub fn parse_many(input : String) -> Array[Value] raise ParseError {
-  fn go(pos : Int, acc : Array[Value]) -> Array[Value] raise ParseError {
+  let acc = []
+  for pos = 0 {
     let pos = skip_ws(input, pos)
     if pos >= input.length() {
-      acc
+      break acc
     } else {
       let (expr, pos) = parse_expr(input, pos)
       acc.push(expr)
-      go(pos, acc)
+      continue pos
     }
   }
-  go(0, [])
 }

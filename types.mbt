@@ -66,14 +66,7 @@ pub fn is_truthy(v : Value) -> Bool {
 ///|
 /// Build a proper list from an Array of Values.
 pub fn list_from_array(arr : Array[Value]) -> Value {
-  fn go(idx : Int) -> Value {
-    if idx >= arr.length() {
-      Nil
-    } else {
-      Pair(arr[idx], go(idx + 1))
-    }
-  }
-  go(0)
+  arr.rev_fold(init=Nil, (acc, v) => Pair(v, acc))
 }
 
 ///|

@@ -56,24 +56,21 @@ pub fn Env::extend(
   params : Value,
   args : Array[Value],
 ) -> Env raise EvalError {
-  fn go(
-    params : Value,
-    idx : Int,
-    bindings : Map[String, Value],
-  ) -> Map[String, Value] raise EvalError {
+  let bindings = {}
+  for params = params, idx = 0 {
     match params {
       Nil => {
         if idx != args.length() {
           raise EvalError::ArityMismatch("<lambda>", idx, args.length())
         }
-        bindings
+        break
       }
       Pair(Sym(name), rest) => {
         if idx >= args.length() {
           raise EvalError::ArityMismatch("<lambda>", idx, args.length())
         }
         bindings[name] = args[idx]
-        go(rest, idx + 1, bindings)
+        continue rest, idx + 1
       }
       Sym(name) => {
         // Variadic: bind remaining args as a list
@@ -82,12 +79,12 @@ pub fn Env::extend(
           rest_args.push(args[j])
         }
         bindings[name] = list_from_array(rest_args)
-        bindings
+        break
       }
       _ => raise EvalError::TypeMismatch("lambda params", params.display())
     }
   }
-  { bindings: go(params, 0, {}), parent: Some(parent) }
+  { bindings, parent: Some(parent) }
 }
 
 ///|
@@ -229,39 +226,36 @@ fn eval_let_star_bindings(
 /// Split named-let bindings into (params, init-exprs).
 /// ((arg1 init1) (arg2 init2) ...) → ([arg1 arg2 ...], [init1 init2 ...])
 fn split_named_let_bindings(bindings : Value) -> (Value, Value) raise EvalError {
-  fn go(
-    v : Value,
-    params_acc : Array[Value],
-    inits_acc : Array[Value],
-  ) -> (Value, Value) raise EvalError {
+  let params_acc = []
+  let inits_acc = []
+  for v = bindings {
     match v {
-      Nil => (list_from_array(params_acc), list_from_array(inits_acc))
+      Nil => break (list_from_array(params_acc), list_from_array(inits_acc))
       Pair(Pair(Sym(arg), Pair(init, Nil)), rest) => {
         params_acc.push(Sym(arg))
         inits_acc.push(init)
-        go(rest, params_acc, inits_acc)
+        continue rest
       }
       _ =>
         raise EvalError::TypeMismatch("named let bindings", bindings.display())
     }
   }
-  go(bindings, [], [])
 }
 
 ///|
 /// Evaluate all arguments in a list.
 fn eval_args(args : Value, env : Env) -> Array[Value] raise EvalError {
-  fn go(v : Value, acc : Array[Value]) -> Array[Value] raise EvalError {
+  let acc = []
+  for v = args {
     match v {
-      Nil => acc
+      Nil => break acc
       Pair(car, cdr) => {
         acc.push(eval(car, env))
-        go(cdr, acc)
+        continue cdr
       }
       _ => raise EvalError::TypeMismatch("arguments", v.display())
     }
   }
-  go(args, [])
 }
 
 ///|
@@ -271,7 +265,7 @@ fn apply(fn_val : Value, args : Array[Value]) -> Value raise EvalError {
     BuiltinProc(_, f) => f(args)
     Closure(params, body, closure_env) => {
       let new_env = Env::extend(closure_env, params, args)
-      eval(body, new_env)
+      eval_sequence(body, new_env)
     }
     _ => raise EvalError::NotCallable(fn_val.display())
   }
@@ -324,8 +318,7 @@ pub fn eval(expr : Value, env : Env) -> Value raise EvalError {
     Pair(Sym("cond"), clauses) => eval_cond(clauses, env)
 
     // (lambda (<params>) <body> ...)
-    Pair(Sym("lambda"), Pair(params, body)) =>
-      Closure(params, Pair(Sym("begin"), body), env)
+    Pair(Sym("lambda"), Pair(params, body)) => Closure(params, body, env)
 
     // (define <name> <value>)
     Pair(Sym("define"), Pair(Sym(name), Pair(val_expr, Nil))) => {
